@@ -1,0 +1,58 @@
+syntax = "proto3";
+option go_package = "GRPC_API_Go_Books/books"; // Tells where to put the generated code
+
+message Book {
+    int64 id = 1;
+    string title = 2;
+    string author = 3;
+    int64 quantity = 4;
+}
+
+message GetBooksRequest{
+
+}
+
+message GetBooksResponse{
+    repeated Book book = 1;
+}
+
+message GetBookRequest{
+    int64 id = 1;
+}
+
+message GetBookResponse{
+    Book book = 1;
+}
+
+message CreateBookRequest{
+    Book book = 1;
+}
+
+message CreateBookResponse{
+    Book book = 1;
+}
+
+message CheckoutBookRequest{
+    int64 id = 1;
+}
+
+message CheckoutBookResponse{
+    Book book = 1;
+}
+
+message ReturnBookRequest{
+    int64 id = 1;
+}
+
+message ReturnBookResponse{
+    Book book = 1;
+}
+
+
+service Books {
+    rpc GetBooks(GetBooksRequest) returns (GetBooksResponse);
+    rpc GetBook(GetBookRequest) returns (GetBookResponse);
+    rpc CreateBook(CreateBookRequest) returns (CreateBookResponse);
+    rpc CheckoutBook(CheckoutBookRequest) returns (CheckoutBookResponse);
+    rpc ReturnBook(ReturnBookRequest) returns (ReturnBookResponse);
+}
