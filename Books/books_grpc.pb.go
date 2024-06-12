@@ -22,6 +22,7 @@ const (
 	Books_GetBooks_FullMethodName     = "/Books/GetBooks"
 	Books_GetBook_FullMethodName      = "/Books/GetBook"
 	Books_CreateBook_FullMethodName   = "/Books/CreateBook"
+	Books_DeleteBook_FullMethodName   = "/Books/DeleteBook"
 	Books_CheckoutBook_FullMethodName = "/Books/CheckoutBook"
 	Books_ReturnBook_FullMethodName   = "/Books/ReturnBook"
 )
@@ -33,6 +34,7 @@ type BooksClient interface {
 	GetBooks(ctx context.Context, in *GetBooksRequest, opts ...grpc.CallOption) (*GetBooksResponse, error)
 	GetBook(ctx context.Context, in *GetBookRequest, opts ...grpc.CallOption) (*GetBookResponse, error)
 	CreateBook(ctx context.Context, in *CreateBookRequest, opts ...grpc.CallOption) (*CreateBookResponse, error)
+	DeleteBook(ctx context.Context, in *DeleteBookRequest, opts ...grpc.CallOption) (*DeleteBookResponse, error)
 	CheckoutBook(ctx context.Context, in *CheckoutBookRequest, opts ...grpc.CallOption) (*CheckoutBookResponse, error)
 	ReturnBook(ctx context.Context, in *ReturnBookRequest, opts ...grpc.CallOption) (*ReturnBookResponse, error)
 }
@@ -75,6 +77,16 @@ func (c *booksClient) CreateBook(ctx context.Context, in *CreateBookRequest, opt
 	return out, nil
 }
 
+func (c *booksClient) DeleteBook(ctx context.Context, in *DeleteBookRequest, opts ...grpc.CallOption) (*DeleteBookResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteBookResponse)
+	err := c.cc.Invoke(ctx, Books_DeleteBook_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *booksClient) CheckoutBook(ctx context.Context, in *CheckoutBookRequest, opts ...grpc.CallOption) (*CheckoutBookResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CheckoutBookResponse)
@@ -102,6 +114,7 @@ type BooksServer interface {
 	GetBooks(context.Context, *GetBooksRequest) (*GetBooksResponse, error)
 	GetBook(context.Context, *GetBookRequest) (*GetBookResponse, error)
 	CreateBook(context.Context, *CreateBookRequest) (*CreateBookResponse, error)
+	DeleteBook(context.Context, *DeleteBookRequest) (*DeleteBookResponse, error)
 	CheckoutBook(context.Context, *CheckoutBookRequest) (*CheckoutBookResponse, error)
 	ReturnBook(context.Context, *ReturnBookRequest) (*ReturnBookResponse, error)
 	mustEmbedUnimplementedBooksServer()
@@ -119,6 +132,9 @@ func (UnimplementedBooksServer) GetBook(context.Context, *GetBookRequest) (*GetB
 }
 func (UnimplementedBooksServer) CreateBook(context.Context, *CreateBookRequest) (*CreateBookResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateBook not implemented")
+}
+func (UnimplementedBooksServer) DeleteBook(context.Context, *DeleteBookRequest) (*DeleteBookResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteBook not implemented")
 }
 func (UnimplementedBooksServer) CheckoutBook(context.Context, *CheckoutBookRequest) (*CheckoutBookResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckoutBook not implemented")
@@ -193,6 +209,24 @@ func _Books_CreateBook_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Books_DeleteBook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteBookRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BooksServer).DeleteBook(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Books_DeleteBook_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BooksServer).DeleteBook(ctx, req.(*DeleteBookRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Books_CheckoutBook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CheckoutBookRequest)
 	if err := dec(in); err != nil {
@@ -247,6 +281,10 @@ var Books_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateBook",
 			Handler:    _Books_CreateBook_Handler,
+		},
+		{
+			MethodName: "DeleteBook",
+			Handler:    _Books_DeleteBook_Handler,
 		},
 		{
 			MethodName: "CheckoutBook",

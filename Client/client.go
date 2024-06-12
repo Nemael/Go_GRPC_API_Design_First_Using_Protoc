@@ -107,6 +107,34 @@ func addBookCmd() *cobra.Command {
 	}
 }
 
+func deleteBookCmd() *cobra.Command {
+	return &cobra.Command{
+		Use: "deletebook",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			var conn *grpc.ClientConn
+			conn, err := grpc.NewClient(":8080", grpc.WithTransportCredentials(insecure.NewCredentials()))
+			if err != nil {
+				log.Fatalf("Could not connect: %s", err)
+			}
+			defer conn.Close()
+
+			b := books.NewBooksClient(conn)
+			book_id, err := strconv.ParseInt(args[0], 10, 64)
+			if err != nil {
+				log.Fatalf("Error when calling DeleteBook, invalid ID: %s", err)
+			}
+			request := books.DeleteBookRequest{Id: book_id}
+			response, err := b.DeleteBook(context.Background(), &request)
+			if err != nil {
+				log.Fatalf("Error when calling DeleteBook: %s", err)
+			}
+			fmt.Printf("You deleted a book succesfully: ")
+			fmt.Println(response.Book)
+			return nil //Tells cobra that no errors happened
+		},
+	}
+}
+
 func checkoutBookCmd() *cobra.Command {
 	return &cobra.Command{
 		Use: "checkout",
@@ -173,6 +201,7 @@ func main() {
 	cmd.AddCommand(getBooksCmd())
 	cmd.AddCommand(getBookCmd())
 	cmd.AddCommand(addBookCmd())
+	cmd.AddCommand(deleteBookCmd())
 	cmd.AddCommand(checkoutBookCmd())
 	cmd.AddCommand(returnBookCmd())
 

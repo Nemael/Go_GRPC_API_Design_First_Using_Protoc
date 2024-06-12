@@ -76,6 +76,25 @@ func (s myBooksServer) CreateBook(ctx context.Context, req *books.CreateBookRequ
 	}, nil
 }
 
+func (s myBooksServer) DeleteBook(ctx context.Context, req *books.DeleteBookRequest) (*books.DeleteBookResponse, error) {
+	var book books.Book
+	db, err := getDB()
+	if err != nil {
+		return nil, err
+	}
+	id := req.Id // Query parameter
+	row := db.QueryRow("SELECT id, title, author, quantity FROM books where id = ?", id)
+	err = row.Scan(&book.Id, &book.Title, &book.Author, &book.Quantity)
+	if err != nil {
+		return nil, err
+	}
+
+	db.QueryRow("DELETE FROM books where id = ?", id)
+	return &books.DeleteBookResponse{
+		Book: &book,
+	}, nil
+}
+
 func (s myBooksServer) CheckoutBook(ctx context.Context, req *books.CheckoutBookRequest) (*books.CheckoutBookResponse, error) {
 	var book books.Book
 	db, err := getDB()

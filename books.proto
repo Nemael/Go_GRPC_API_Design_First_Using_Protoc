@@ -32,6 +32,14 @@ message CreateBookResponse{
     Book book = 1;
 }
 
+message DeleteBookRequest{
+    int64 id = 1;
+}
+
+message DeleteBookResponse{
+    Book book = 1;
+}
+
 message CheckoutBookRequest{
     int64 id = 1;
 }
@@ -53,6 +61,7 @@ service Books {
     rpc GetBooks(GetBooksRequest) returns (GetBooksResponse);
     rpc GetBook(GetBookRequest) returns (GetBookResponse);
     rpc CreateBook(CreateBookRequest) returns (CreateBookResponse);
+    rpc DeleteBook(DeleteBookRequest) returns (DeleteBookResponse);
     rpc CheckoutBook(CheckoutBookRequest) returns (CheckoutBookResponse);
     rpc ReturnBook(ReturnBookRequest) returns (ReturnBookResponse);
 }
